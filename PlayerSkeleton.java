@@ -416,27 +416,6 @@ public class PlayerSkeleton {
 		}
 	}
 
-	/**
-	 * Solver that return a random move
-	 *
-	 */
-	public static final class RandomSolver implements TetrisSolver {
-
-		@Override
-		public int pickMove(State s, int[][] legalMoves, float[] w) {
-			return (int) (Math.random() * legalMoves.length);
-		}
-
-		@Override
-		public int weightsLength() {
-			return 0;
-		}
-
-		public float[] featureValues(State s) {
-			return null;
-		}
-
-	}
 
 	/**
 	 * Solver using the heuristic function at depth 1
@@ -602,7 +581,17 @@ public class PlayerSkeleton {
 		}
 	}
 
-	// FIXME we need to clean this before submitting
+	
+	
+	/*
+	 * pick move function: not used
+	 */
+	public int pickMove(State s, int[][] legalMoves){
+		return MINMAX_SOLVER.pickMove(s, legalMoves, BEST_WEIGHTS);
+	}
+	
+	
+	
 	/**
 	 * MAIN FUNCTION
 	 * 
@@ -612,7 +601,6 @@ public class PlayerSkeleton {
 		State s = new State();
 		new TFrame(s);
 		TetrisSolver aI = MINMAX_SOLVER;
-		long start = System.currentTimeMillis();
 		while (!s.hasLost()) {
 			s.makeMove(aI.pickMove(s, s.legalMoves(), BEST_WEIGHTS));
 			 s.draw();
@@ -620,14 +608,7 @@ public class PlayerSkeleton {
 		
 			try { Thread.sleep(100); } catch (InterruptedException e) {
 				 e.printStackTrace(); }
-			 
-			if (s.getRowsCleared() % 1000 == 0) {
-				System.out.println(" lines cleared " + s.getRowsCleared());
-			}
 		}
-		long end = System.currentTimeMillis();
-		long diff = end - start;
-		System.out.println("it takes " + diff + " milliseconds");
 		System.out.println("You have completed " + s.getRowsCleared() + " rows.");
 	}
 
