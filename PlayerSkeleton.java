@@ -1,4 +1,4 @@
-package src;
+
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,35 +9,9 @@ public class PlayerSkeleton {
 	/*
 	 * Constants used as parameters for the AI
 	 */
-	public static final float[] DUMBS_WEIGHTS = new float[GivenHeuristic.LENGTH];
-	public static final float[] DUMB_EXPERIMENTAL_WEIGHTS = new float[new ImprovedHeuristics().weightsLength()];
-
-	// Manually entered weights
-	public static final float[] BASICS_WEIGHTS = { 0, // weight 0
-			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // columns weights
-			-1, -1, -1, -1, -1, -1, -1, -1, -1, // differences between columns
-												// weights
-			-1, //
-			-50 };
-
-	// FIXME This constant is a draft of previous result, delete this before
-	// submitting the code
-	public static final float[] COMPUTED_WEIGHTS = { -4.0f, 0.0f, -1.0f, 0.0f, -2.0f, -1.0f, 0.0f, 0.0f, -1.0f, -2.0f,
-			1.0f, -3.0f, -1.0f, -2.0f, -2.0f, -2.0f, -1.0f, -2.0f, -2.0f, -1.0f, -3.0f, -9.0f };
-
-	public static final float[] BEST_WEIGHTS = { -2.064638f, 0.99241304f, -0.9892719f, -0.022724867f, -0.9527318f,
-			-0.021005929f, 0.012356937f, -0.016091943f, -0.0025559664f, -1.0049679f, 0.9978579f, -2.940033f, -1.950203f,
-			-2.0007744f, -1.956233f, -1.9986322f, -1.9524348f, -1.9964991f, -1.97714f, -2.9492042f, -0.009090185f,
-			-9.940321f }; // loic 80'000
-
-	public static final float[] BEST_WEIGHTS_IMPROVED = { 1.7035127f, 2.0450842f, -0.6609158f, 0.2362841f, -2.5351565f,
-			0.9790008f, 0.64786285f, -0.42757857f, 0.62548554f, -0.54276633f, 1.5980941f, -3.8651803f, -2.020836f,
-			-3.5747838f, -4.352761f, -3.326226f, -2.380412f, -3.5919976f, -1.8160414f, -4.177846f, -1.548367f,
-			-10.818589f, -6.1607633f, -0.14084265f, 0.17277686f, 0.4731508f
-
-	};
 	
-	public static final float[] BEST_WEIGHTS_FINAL = { -9.854448f, 2.4389153f,	-2.333226f,	0.36771116f,	-0.52315074f,
+	//weights used by the Heuristic
+	public static final float[] BEST_WEIGHTS = { -9.854448f, 2.4389153f,	-2.333226f,	0.36771116f,	-0.52315074f,
 			-1.3534356f,	0.024638796f,	0.27249014f, 	-0.54726523f,	-1.4634881f, 	2.3102803f,  	-3.7318974f,
 			-2.8147786f, 	-3.0926073f, 	-2.84025f, 	-3.6721375f, 	-2.2535586f, 	-2.2111578f, 	-2.9119258f,
 			-3.4484754f, 	-3.2507586f, 	-7.856307f, 	-8.207972f, 	-0.047947817f, 	1.5860023f,	3.6743877f
@@ -47,15 +21,18 @@ public class PlayerSkeleton {
 	 * Solvers: different AI with different parameters
 	 * 
 	 */
-	public static final RandomSolver RANDOM_SOLVER = new RandomSolver();// FIXME
-	public static final StartingSolver BASIC_SOLVER = new StartingSolver(new GivenHeuristic());
-	public static final MinMaxSolver MINMAX_SOLVER = new MinMaxSolver(new GivenHeuristic(), 2);
-	public static final MinMaxSolver DEEPER_MINMAX_SOLVER = new MinMaxSolver(new GivenHeuristic(), 3);
-	public static final TetrisSolver IMPROVED_BASIC_SOLVER = new StartingSolver(new ImprovedHeuristics()); // FIXME
-	public static final MinMaxSolver IMPROVED_MINMAX_SOLVER = new MinMaxSolver(new ImprovedHeuristics(), 2);
-	public static final MinMaxSolver IMPROVED_DEEPER_MINMAX_SOLVER = new MinMaxSolver(new ImprovedHeuristics(), 3);
-	// change
-	// name!!!
+	
+	// Informed Search :
+	// solver that simply search for the best heuristic among the allowed moves
+	public static final StartingSolver BASIC_SOLVER = new StartingSolver(new ImprovedHeuristics());
+	
+	//Adversial Search:
+	// Solver using Min_max for a depth of 2
+	public static final MinMaxSolver MINMAX_SOLVER = new MinMaxSolver(new ImprovedHeuristics(), 2);
+	
+	// Solver using Min_max for a depth of 3
+	public static final MinMaxSolver DEEPER_MINMAX_SOLVER = new MinMaxSolver(new ImprovedHeuristics(), 3);
+
 
 	/**
 	 * Tool interface containing useful functions used by the heuristics
@@ -633,17 +610,17 @@ public class PlayerSkeleton {
 	 */
 	public static void main(String[] args) {
 		State s = new State();
-		// new TFrame(s);
+		new TFrame(s);
 		TetrisSolver aI = MINMAX_SOLVER;
 		long start = System.currentTimeMillis();
 		while (!s.hasLost()) {
 			s.makeMove(aI.pickMove(s, s.legalMoves(), BEST_WEIGHTS));
-			// s.draw();
-			// s.drawNext(0,0);
-			/*
-			 * try { Thread.sleep(100); } catch (InterruptedException e) {
-			 * e.printStackTrace(); }
-			 */
+			 s.draw();
+			 s.drawNext(0,0);
+		
+			try { Thread.sleep(100); } catch (InterruptedException e) {
+				 e.printStackTrace(); }
+			 
 			if (s.getRowsCleared() % 1000 == 0) {
 				System.out.println(" lines cleared " + s.getRowsCleared());
 			}
